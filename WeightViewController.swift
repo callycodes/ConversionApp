@@ -10,6 +10,11 @@ import UIKit
 
 class WeightViewController: UIViewController {
 
+    let defaults = UserDefaults.standard
+    
+    var lastEditedUnit:String = ""
+    var lastEditedValue:String = ""
+    
     @IBOutlet weak var kilogramsTextField: UITextField!
     @IBOutlet weak var gramsTextField: UITextField!
     @IBOutlet weak var ouncesTextField: UITextField!
@@ -19,31 +24,47 @@ class WeightViewController: UIViewController {
     
     @IBOutlet weak var saveButton: UIButton!
     
+    
     @IBAction func kilogramsInputChanged(_ sender: Any) {
-        print("Editing kilograms")
+        lastEditedUnit = "Kilograms"
+        lastEditedValue = kilogramsTextField.text ?? "0"
         convertAllValues(input: kilogramsTextField.text ?? "0", unit: UnitMass.kilograms)
     }
     
     @IBAction func gramsInputChanged(_ sender: Any) {
-        print("Grams edited")
+        lastEditedUnit = "Grams"
+        lastEditedValue = gramsTextField.text ?? "0"
         convertAllValues(input: gramsTextField.text ?? "0", unit: UnitMass.grams)
     }
     
     @IBAction func ouncesInputChanged(_ sender: Any) {
+        lastEditedUnit = "Ounces"
+        lastEditedValue = ouncesTextField.text ?? "0"
         convertAllValues(input: ouncesTextField.text ?? "0", unit: UnitMass.ounces)
     }
     
     @IBAction func poundsInputChanged(_ sender: Any) {
+        lastEditedUnit = "Pounds"
+        lastEditedValue = poundsTextField.text ?? "0"
          convertAllValues(input: poundsTextField.text ?? "0", unit: UnitMass.pounds)
     }
     
     @IBAction func stonesInputChanged(_ sender: Any) {
-        let total = convertStonesPoundsToStones(stones: stonesTextField.text ?? "0", pounds: stonesPTextField.text ?? "0")
+        let text = stonesTextField.text ?? "0"
+        let textP = stonesPTextField.text ?? "0"
+        lastEditedUnit = "Stone Pounds"
+        lastEditedValue = text + "st " + textP + "lb"
+        let total = convertStonesPoundsToStones(stones: text, pounds: textP)
         convertAllValues(input: total, unit: UnitMass.stones)
     }
     
     @IBAction func stonesPInputChanged(_ sender: Any) {
-        let total = convertStonesPoundsToStones(stones: stonesTextField.text ?? "0", pounds: stonesPTextField.text ?? "0")
+        
+        let text = stonesTextField.text ?? "0"
+        let textP = stonesPTextField.text ?? "0"
+        lastEditedUnit = "Stone Pounds"
+        lastEditedValue = text + "st " + textP + "lb"
+        let total = convertStonesPoundsToStones(stones: text, pounds: textP)
         convertAllValues(input: total, unit: UnitMass.stones)
     }
     
@@ -52,6 +73,17 @@ class WeightViewController: UIViewController {
         let poundsVal = Measurement(value: Double(pounds) ?? 0, unit: UnitMass.pounds)
         let stoneTotal = stonesVal.value + poundsVal.converted(to: UnitMass.stones).value
         return String(stoneTotal)
+    }
+    
+    @IBAction func savePressed(_ sender: Any) {
+        if (lastEditedUnit == "" || lastEditedValue == "") {
+            return
+        }
+        
+        let data = "\(kilogramsTextField.text!)KG = \(gramsTextField.text!)g = \(ouncesTextField.text!) oz =  \(poundsTextField.text!) lb = " +
+            stonesTextField.text! + "st " + stonesPTextField.text! + "lb"
+        AppDefaults.saveConversion(unit: "Weight", converted: lastEditedValue + " " + lastEditedUnit, data: data)
+        self.present(AppDefaults.saveAlert(), animated: true, completion: nil)
     }
     
     func convertAllValues(input: String, unit: UnitMass) {
@@ -68,19 +100,19 @@ class WeightViewController: UIViewController {
     }
     
     func convertToKilograms(_ measurement:Measurement<UnitMass>) {
-        kilogramsTextField.text = String(measurement.converted(to: UnitMass.kilograms).value);
+        kilogramsTextField.text = measurement.converted(to: UnitMass.kilograms).value.prepare();
     }
     
     func convertToGrams(_ measurement:Measurement<UnitMass>) {
-        gramsTextField.text = String(format: "%.0f", measurement.converted(to: UnitMass.grams).value);
+        gramsTextField.text = measurement.converted(to: UnitMass.grams).value.prepare();
     }
     
     func convertToOunces(_ measurement:Measurement<UnitMass>) {
-        ouncesTextField.text = String(format: "%.3f", measurement.converted(to: UnitMass.ounces).value);
+        ouncesTextField.text = measurement.converted(to: UnitMass.ounces).value.prepare();
     }
     
     func convertToPounds(_ measurement:Measurement<UnitMass>) {
-        poundsTextField.text = String(format: "%.3f", measurement.converted(to: UnitMass.pounds).value);
+        poundsTextField.text = measurement.converted(to: UnitMass.pounds).value.prepare();
     }
     
     func convertToStones(_ measurement:Measurement<UnitMass>) {
@@ -90,11 +122,12 @@ class WeightViewController: UIViewController {
         
         
         stonesTextField.text = String(format: "%.0f", floor(stones));
-        stonesPTextField.text = String(format: "%.3f", pounds)
+        stonesPTextField.text = pounds.prepare()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround() 
         // Do any additional setup after loading the view.
         saveButton.layer.borderWidth = 1
         saveButton.layer.borderColor = UIColor.black.cgColor

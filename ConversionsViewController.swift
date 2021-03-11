@@ -10,6 +10,8 @@ import UIKit
 
 class ConversionsViewController: UIViewController {
 
+    let defaults = UserDefaults.standard
+    
     @IBOutlet weak var WeightViewContainer: UIView!
     @IBOutlet weak var TemperatureViewContainer: UIView!
     @IBOutlet weak var DistanceViewContainer: UIView!
@@ -17,6 +19,7 @@ class ConversionsViewController: UIViewController {
     @IBOutlet weak var VolumeViewContainer: UIView!
     
     @IBOutlet weak var ContainerView: UIView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +44,7 @@ class ConversionsViewController: UIViewController {
     func showView(_ view:UIView) {
         view.alpha = 1
     }
+    
 
     
     @IBAction func TemperatureButton(_ sender: Any) {
