@@ -49,12 +49,12 @@ class HistoryViewController: UIViewController {
         var y = 30
         
         for conversion in conversions {
-            let label = UITextView(frame: CGRect(x: 30, y: y, width: 350, height: 130))
+            let label = UITextView(frame: CGRect(x: 0, y: y, width: Int(self.view.frame.width), height: 130))
             label.textAlignment = .center
-            label.font = UIFont.systemFont(ofSize: 19.0)
+            label.font = UIFont.systemFont(ofSize: 16.0)
             label.text = "\(conversion.converted) converts too: \n \(conversion.data)"
             vStack.addSubview(label)
-            y = y + 140
+            y = y + 100
         }
         
         print("Updated")

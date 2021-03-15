@@ -12,6 +12,8 @@ class ConversionsViewController: UIViewController {
 
     let defaults = UserDefaults.standard
     
+    @IBOutlet weak var toolbar: UIToolbar!
+    
     @IBOutlet weak var WeightViewContainer: UIView!
     @IBOutlet weak var TemperatureViewContainer: UIView!
     @IBOutlet weak var DistanceViewContainer: UIView!
