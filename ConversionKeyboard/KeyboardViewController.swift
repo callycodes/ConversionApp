@@ -21,8 +21,10 @@ class KeyboardViewController: UIInputViewController {
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
-        
-        // Add custom view sizing constraints here
+    }
+    
+    @IBAction func nextKeyboardPressed(_ sender: UIButton) {
+        advanceToNextInputMode()
     }
     
     @IBAction func buttonPressed(_ sender: UIButton) {
